@@ -1,4 +1,4 @@
-# GitHooks
+# Git Hooks
 This is a template repository for my Git hooks, that I use in many of my projects.
 
 I use the following hooks:
