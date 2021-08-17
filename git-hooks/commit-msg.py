@@ -16,6 +16,22 @@ def exit_failure(error_message):
     sys.exit(1)
 
 
+def co_authors(last_line):
+    # add authors here
+    authors = {"AR": "Co-authored-by: R, Alex <alex.richardson19@imperial.ac.uk>"}
+    line = last_line.strip("\n").split(" ")
+    print(Fore.GREEN + Style.BRIGHT +
+          "Replacing name(s) with co-author(s)" + Style.RESET_ALL)
+    for i in range(1, len(line)):
+        try:
+            line[i] = authors[line[i]]
+        except KeyError:
+            line[i] = ""
+    line = [x for x in line if x != ""]
+    # return updated authors without "W/"
+    return "\n".join(line[1:])
+
+
 def follows_convention(first_line):
     """Checks if `first_line` follows commit convention"""
     # located in the commit template
@@ -45,13 +61,18 @@ def update_commit_msg(file):
         follows_convention(lines[0].lstrip())
         new_commit_message_append = new_commit_message.append
         for line in lines:
+            line_startswith = line.startswith
             # remove leading whitespace
             if line != "\n":
                 line = line.lstrip()
             # ignore comments
-            if line.startswith("#"):
+            if line_startswith("#"):
                 continue
-            new_commit_message_append(line)
+            l = line
+            # co-author alias
+            if line_startswith("W/"):
+                l = co_authors(line)
+            new_commit_message_append(l)
     fp.close()
     return new_commit_message
 
