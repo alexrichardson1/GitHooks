@@ -29,8 +29,8 @@ def follows_convention(first_line):
         exit_failure("invalid scope.")
     if (match(scope + r": [A-Z]", first_line) is None):
         exit_failure("invalid subject.")
-    if len(first_line) > 50:
-        exit_failure("header is longer than 50 characters.")
+    if len(first_line) > 72:
+        exit_failure("header is longer than 72 characters.")
     if (any([first_line.endswith(punc) for punc in [
             ".", "!", "?", "," "...", ":", ";", "(", ")", "'", "-"]])):
         exit_failure("trailing punctuation.")
