@@ -35,7 +35,7 @@ class FollowsConventionFailure(unittest.TestCase):
 
     def test_follows_convention_verbose_message(self):
         hook.follows_convention(
-            "feat(foo): This is a really long commit message and should fail")
+            "feat(foo): This is a realllllllyyyyyyyyy long commit message and should fail")
 
     def test_follows_convention_empty_message_trailing_punctuation(self):
         hook.follows_convention("fix(foo): No trailing punctuation!")
