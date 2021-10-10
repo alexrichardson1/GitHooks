@@ -40,7 +40,7 @@ def follows_convention(first_line):
     match = re.match
     if (all([not first_line.startswith(type) for type in types])):
         exit_failure("invalid type.")
-    scope = r"[a-z]+\(\.?[\w\-/]+(\.[a-zA-Z]+)?\)"
+    scope = r"[a-z]+\(\.?[\w\-/]+((\.[a-zA-Z]+)?)+\)"
     if (match(scope, first_line) is None):
         exit_failure("invalid scope.")
     if (match(scope + r": [A-Z]", first_line) is None):
