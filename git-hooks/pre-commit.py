@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+# pylint: disable=C0103
+"""
+pre-commit hook is used to inspect the snapshot that’s about to be committed
+"""
 
 import sys
 import os
@@ -7,6 +11,7 @@ from colorama import Fore, Back, Style
 
 
 def exit_failure(error_message):
+    """Exits non-zero with error message."""
     print(
         Fore.RED +
         Style.BRIGHT +
@@ -26,33 +31,37 @@ def run_formatter(file, formatter):
 
 def format_files(staged_files, file_extension, formatter):
     """Format `staged_files` with the extension `file_extension` using the command `formatter`."""
-    [run_formatter(file, formatter)
-     for file in staged_files if file.endswith(file_extension)]
+    for file in staged_files:
+        if file.endswith(file_extension):
+            run_formatter(file, formatter)
 
 
 def format_python(files):
+    """Formats python files"""
     format_files(files, ".py", "autopep8 -i ")
 
 
 def run_linter(file, linter):
-    """Lint file."""
+    """Lint `file` using the command `linter`."""
     print("Linting file: " + Back.BLACK + file + Style.RESET_ALL)
-    os.system(linter + file)
-    if os.WEXITSTATUS != 0:
+    if os.WEXITSTATUS(os.system(linter + file)) != 0:
         exit_failure("linting failed")
 
 
 def lint_files(staged_files, file_extension, linter):
     """Lint `staged_files` with the extension `file_extension` using the command `linter`."""
-    [run_linter(file, linter)
-     for file in staged_files if file.endswith(file_extension)]
+    for file in staged_files:
+        if file.endswith(file_extension):
+            run_linter(file, linter)
 
 
 def lint_python(files):
+    """Lint python files."""
     lint_files(files, ".py", "pylint ")
 
 
 def main():
+    """Main function for the pre-commit hook."""
     print("--- Running pre-commit hook ---")
     files = subprocess.check_output(
         "git diff --name-only --staged",
@@ -61,10 +70,12 @@ def main():
     staged_files = files.split("\n")
     # add format functions here
     format_functions = [format_python]  # e.g. [format_java, format_haskell]
-    [format_function(staged_files) for format_function in format_functions]
+    for format_function in format_functions:
+        format_function(staged_files)
     # add lint functions here
     lint_functions = [lint_python]  # e.g. [lint_java, lint_haskell]
-    [lint_function(staged_files) for lint_function in lint_functions]
+    for lint_function in lint_functions:
+        lint_function(staged_files)
     print(Fore.GREEN + Style.BRIGHT +
           "pre-commit hook finished successfully." + Style.RESET_ALL)
     print("-------------------------------")
