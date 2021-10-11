@@ -1,4 +1,9 @@
 #!/usr/bin/python3
+# pylint: disable=C0103
+# pylint: disable=R1729
+"""
+Used to validate the commit message
+"""
 
 import sys
 import re
@@ -6,6 +11,7 @@ from colorama import Fore, Style
 
 
 def exit_failure(error_message):
+    """Exits non-zero with error message."""
     print(
         Fore.RED +
         Style.BRIGHT +
@@ -17,6 +23,7 @@ def exit_failure(error_message):
 
 
 def co_authors(last_line):
+    """Used as a quick way to use co-authors"""
     # add authors here
     authors = {"AR": "Co-authored-by: R, Alex <alex.richardson19@imperial.ac.uk>"}
     line = last_line.strip("\n").split(" ")
@@ -38,21 +45,22 @@ def follows_convention(first_line):
     types = ["feat", "fix", "style", "refactor",
              "perf", "test", "docs", "chore", "build", "ci"]
     match = re.match
-    if (all([not first_line.startswith(type) for type in types])):
+    if all([not first_line.startswith(type) for type in types]):
         exit_failure("invalid type.")
     scope = r"[a-z]+\(\.?[\w\-/]+((\.[a-zA-Z]+)?)+\)"
-    if (match(scope, first_line) is None):
+    if match(scope, first_line) is None:
         exit_failure("invalid scope.")
-    if (match(scope + r": [A-Z]", first_line) is None):
+    if match(scope + r": [A-Z]", first_line) is None:
         exit_failure("invalid subject.")
     if len(first_line) > 72:
         exit_failure("header is longer than 72 characters.")
-    if (any([first_line.endswith(punc) for punc in [
-            ".", "!", "?", "," "...", ":", ";", "(", ")", "'", "-"]])):
+    if any([first_line.endswith(punc) for punc in [
+            ".", "!", "?", ",", "...", ":", ";", "(", ")", "'", "-"]]):
         exit_failure("trailing punctuation.")
 
 
 def update_commit_msg(file):
+    """Validates and updates the commit message."""
     new_commit_message = []
     with open(file, "r") as fp:
         lines = fp.readlines()
@@ -68,11 +76,10 @@ def update_commit_msg(file):
             # ignore comments
             if line_startswith("#"):
                 continue
-            l = line
             # co-author alias
             if line_startswith("W/"):
-                l = co_authors(line)
-            new_commit_message_append(l)
+                line = co_authors(line)
+            new_commit_message_append(line)
     fp.close()
     return new_commit_message
 
@@ -85,6 +92,7 @@ def write_commit_msg(file, new_commit_message):
 
 
 def main():
+    """Main function for the commit-msg hook."""
     print("--- Running commit-msg hook ---")
     file = sys.argv[1]
     write_commit_msg(file, update_commit_msg(file))
