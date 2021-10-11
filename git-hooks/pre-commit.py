@@ -68,6 +68,13 @@ def main():
         shell=True,
         universal_newlines=True)
     staged_files = files.split("\n")
+    files = subprocess.check_output(
+        "git diff --name-only --diff-filter=D",
+        shell=True,
+        universal_newlines=True)
+    deleted_filles = files.split("\n")
+    staged_files = [
+        file for file in staged_files if file not in deleted_filles]
     # add format functions here
     format_functions = [format_python]  # e.g. [format_java, format_haskell]
     for format_function in format_functions:
