@@ -22,18 +22,23 @@ def exit_failure(error_message):
     sys.exit(1)
 
 
-def run_formatter(file, formatter):
-    """Format and stage file."""
-    print("Formatting file: " + Back.BLACK + file + Style.RESET_ALL)
-    os.system(formatter + file)
-    os.system("git add " + file)
+def run_formatter(files, formatter):
+    """Format and stage files."""
+    files_list = [f for f in files.split(" ") if f != ""]
+    for file in files_list:
+        print("Formatting file: " + Back.BLACK + file + Style.RESET_ALL)
+    os.system(formatter + files)
+    os.system("git add " + files)
 
 
 def format_files(staged_files, file_extension, formatter):
     """Format `staged_files` with the extension `file_extension` using the command `formatter`."""
+    files = ""
     for file in staged_files:
         if file.endswith(file_extension):
-            run_formatter(file, formatter)
+            files += f"{file} "
+    if files != "":
+        run_formatter(files, formatter)
 
 
 def format_python(files):
@@ -41,18 +46,23 @@ def format_python(files):
     format_files(files, ".py", "autopep8 -i ")
 
 
-def run_linter(file, linter):
+def run_linter(files, linter):
     """Lint `file` using the command `linter`."""
-    print("Linting file: " + Back.BLACK + file + Style.RESET_ALL)
-    if os.WEXITSTATUS(os.system(linter + file)) != 0:
+    files_list = [f for f in files.split(" ") if f != ""]
+    for file in files_list:
+        print("Linting file: " + Back.BLACK + file + Style.RESET_ALL)
+    if os.WEXITSTATUS(os.system(linter + files)) != 0:
         exit_failure("linting failed")
 
 
 def lint_files(staged_files, file_extension, linter):
     """Lint `staged_files` with the extension `file_extension` using the command `linter`."""
+    files = ""
     for file in staged_files:
         if file.endswith(file_extension):
-            run_linter(file, linter)
+            files += f"{file} "
+    if files != "":
+        run_linter(files, linter)
 
 
 def lint_python(files):
