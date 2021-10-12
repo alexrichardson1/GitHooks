@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # pylint: disable=C0103
+# pylint: disable=R1729
 """
 pre-commit hook is used to inspect the snapshot that’s about to be committed
 """
@@ -31,11 +32,12 @@ def run_formatter(files, formatter):
     os.system("git add " + files)
 
 
-def format_files(staged_files, file_extension, formatter):
+def format_files(staged_files, file_extensions, formatter):
     """Format `staged_files` with the extension `file_extension` using the command `formatter`."""
     files = ""
     for file in staged_files:
-        if file.endswith(file_extension):
+        if any([file.endswith(file_extension)
+                for file_extension in file_extensions]):
             files += f"{file} "
     if files != "":
         run_formatter(files, formatter)
@@ -43,7 +45,7 @@ def format_files(staged_files, file_extension, formatter):
 
 def format_python(files):
     """Formats python files"""
-    format_files(files, ".py", "autopep8 -i ")
+    format_files(files, [".py"], "autopep8 -i ")
 
 
 def run_linter(files, linter):
@@ -55,11 +57,12 @@ def run_linter(files, linter):
         exit_failure("linting failed")
 
 
-def lint_files(staged_files, file_extension, linter):
+def lint_files(staged_files, file_extensions, linter):
     """Lint `staged_files` with the extension `file_extension` using the command `linter`."""
     files = ""
     for file in staged_files:
-        if file.endswith(file_extension):
+        if any([file.endswith(file_extension)
+                for file_extension in file_extensions]):
             files += f"{file} "
     if files != "":
         run_linter(files, linter)
@@ -67,7 +70,7 @@ def lint_files(staged_files, file_extension, linter):
 
 def lint_python(files):
     """Lint python files."""
-    lint_files(files, ".py", "pylint ")
+    lint_files(files, [".py"], "pylint ")
 
 
 def main():
