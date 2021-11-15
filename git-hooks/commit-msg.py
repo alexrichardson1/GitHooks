@@ -8,7 +8,7 @@ Used to validate the commit message
 import sys
 import re
 from colorama import Fore, Style
-from util import exit_failure
+from util import exit_failure, print_successful
 
 
 def co_authors(last_line):
@@ -87,8 +87,7 @@ def main():
     print("--- Running commit-msg hook ---")
     file = sys.argv[1]
     write_commit_msg(file, update_commit_msg(file))
-    print(Fore.GREEN + Style.BRIGHT +
-          "Commit-msg hook finished successfully." + Style.RESET_ALL)
+    print_successful("commit-msg")
     print("-------------------------------")
     sys.exit(0)
 

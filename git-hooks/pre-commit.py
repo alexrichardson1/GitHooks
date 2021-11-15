@@ -8,8 +8,8 @@ pre-commit hook is used to inspect the snapshot that’s about to be committed
 import sys
 import os
 import subprocess
-from colorama import Fore, Back, Style
-from util import exit_failure
+from colorama import Back, Style
+from util import exit_failure, print_successful
 
 
 def run_formatter(files, formatter):
@@ -80,8 +80,7 @@ def main():
     lint_functions = [lint_python]  # e.g. [lint_java, lint_haskell]
     for lint_function in lint_functions:
         lint_function(staged_files)
-    print(Fore.GREEN + Style.BRIGHT +
-          "pre-commit hook finished successfully." + Style.RESET_ALL)
+    print_successful("pre-commit")
     print("-------------------------------")
     sys.exit(0)
 
